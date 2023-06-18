@@ -3,18 +3,29 @@ package main
 /*
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+
+__attribute__((weak))
+ void my_memcpy_wrapper(void* dest, const void* src, size_t size) {
+     memcpy(dest, src, size);
+ }
+
 */
 import "C"
 
 import (
 	"archive/zip"
 	"fmt"
-	"github.com/google/uuid"
 	"io"
 	"os"
+	"path"
+	"path/filepath"
 	p "path/filepath"
+	"strconv"
 	"strings"
 	"unsafe"
+
+	"github.com/google/uuid"
 )
 
 // "time"
@@ -31,9 +42,29 @@ func ReadDir(path string) ([]string, error) {
 	return files, nil
 }
 
-func getExt(name string) string {
-	stringChunks := strings.Split(name, ".")
-	return stringChunks[len(stringChunks)-1]
+func removeAllContents(dirPath string) error {
+	// Open the directory
+	dir, err := os.Open(dirPath)
+	if err != nil {
+		return err
+	}
+	defer dir.Close()
+
+	// Read the directory entries
+	entries, err := dir.Readdir(-1)
+	if err != nil {
+		return err
+	}
+
+	// Remove each file or directory within the directory
+	for _, entry := range entries {
+		entryPath := p.Join(dirPath, entry.Name())
+		err = os.RemoveAll(entryPath)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 //export Unzip
@@ -60,7 +91,7 @@ func Unzip(_files *C.char, _path *C.char, _output *C.char) *C.char {
 				continue
 			}
 
-			dstPath := p.Join(output, nameID+"."+getExt(f.Name))
+			dstPath := p.Join(output, nameID+"."+filepath.Ext(f.Name))
 			fmt.Println(dstPath)
 
 			cf, errC := os.Create(dstPath)
@@ -89,6 +120,68 @@ func Unzip(_files *C.char, _path *C.char, _output *C.char) *C.char {
 		}
 	}
 	return C.CString(strings.Join(results, "&?&"))
+}
+
+// Function to check if a file has an image extension
+func isImageFile(filename string) bool {
+	extension := filepath.Ext(filename)
+	switch extension {
+	case ".jpg", ".jpeg", ".png", ".gif":
+		return true
+	default:
+		return false
+	}
+}
+
+//export Unzip_Single_book
+func Unzip_Single_book(_filePath *C.char, _dest *C.char) {
+
+	// Convert C string to Go string
+	zipPath := C.GoString(_filePath)
+	dest := C.GoString(_dest)
+
+	removeAllContents(dest)
+
+	// Open the zip file
+	r, err := zip.OpenReader(zipPath)
+	if err != nil {
+		fmt.Println("Failed to open zip file:", err)
+
+	}
+	defer r.Close()
+
+	// Iterate over each file in the zip archive
+	fmt.Println("Number of files in a book: ", len(r.File))
+	for i, file := range r.File {
+
+		if file.FileInfo().IsDir() {
+			continue
+		}
+		// Check if the file is an image (you can modify this condition as needed)
+		if !isImageFile(file.Name) {
+			continue
+		}
+		fileTargetPath := path.Join(dest, strconv.Itoa(i)+filepath.Ext(file.Name))
+		createdFile, creationErr := os.Create(fileTargetPath)
+		if creationErr != nil {
+			fmt.Println(creationErr)
+			continue
+		}
+		archivedFile, openErr := file.Open()
+
+		if openErr != nil {
+			continue
+		}
+
+		defer archivedFile.Close()
+
+		_, copyErr := io.Copy(createdFile, archivedFile)
+
+		if copyErr != nil {
+			fmt.Println("Failed to copy the file ", createdFile.Name())
+			continue
+		}
+	}
 }
 
 //export FreeStrings
