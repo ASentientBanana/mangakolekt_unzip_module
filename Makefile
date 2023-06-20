@@ -6,20 +6,23 @@ headers= libunzip.h
 l_outputs= $(linuxBuild) $(headers)
 m_outputs= $(macBuild) $(headers)
 w_outputs= $(winBuild) $(headers)
-output_target= ../lib/ffi/
+output_target= ../assets/
 
-clean: main.go
+all: main.go
 	go build -buildmode=c-shared -o  $(linuxBuild) main.go
+	cp ./$(headers) $(output_target)linux/$(headers)
+	cp $(linuxBuild)  $(output_target)linux/$(linuxBuild)
 	go build -buildmode=c-shared -o  $(macBuild)  main.go
+	cp ./$(headers) $(output_target)mac/$(headers)
+	cp $(macBuild)  $(output_target)mac/$(macBuild)  
 	go build -buildmode=c-shared -o  $(winBuild)  main.go
-	rm  $(output_target)$(linuxBuild)
-	rm  $(output_target)$(macBuild)  
-	rm  $(output_target)$(winBuild)  
-	cp ./$(headers) $(output_target)$(headers)
-	cp $(linuxBuild)  $(output_target)$(linuxBuild)
-	cp $(macBuild)  $(output_target)$(macBuild)  
-	cp $(winBuild)  $(output_target)$(winBuild)  
+	cp ./$(headers) $(output_target)win/$(headers)
+	cp $(winBuild)  $(output_target)win/$(winBuild)  
 
+clean-all:
+	rm  $(output_target)win/$(winBuild)  
+	rm  $(output_target)linux/$(linuxBuild)
+	rm  $(output_target)mac/$(macBuild)  
 
 
 build: main.go
