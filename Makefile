@@ -10,14 +10,14 @@ output_target= ../assets/
 
 all: main.go
 	go build -buildmode=c-shared -o  $(linuxBuild) main.go
-	cp ./$(headers) $(output_target)linux/$(headers)
-	cp $(linuxBuild)  $(output_target)linux/$(linuxBuild)
+	cp ./$(headers) ../lib/linux/$(headers)
+	cp $(linuxBuild) ../lib/linux/$(linuxBuild)
 	go build -buildmode=c-shared -o  $(macBuild)  main.go
-	cp ./$(headers) $(output_target)mac/$(headers)
-	cp $(macBuild)  $(output_target)mac/$(macBuild)  
+	cp ./$(headers) ../macos/$(headers)
+	cp $(macBuild)  ../macos/$(macBuild)  
 	go build -buildmode=c-shared -o  $(winBuild)  main.go
-	cp ./$(headers) $(output_target)win/$(headers)
-	cp $(winBuild)  $(output_target)win/$(winBuild)  
+	cp ./$(headers) ../windows/runner/$(headers)
+	cp $(winBuild)  ../windows/runner/$(winBuild)  
 
 clean-all:
 	rm  $(output_target)win/$(winBuild)  
