@@ -6,6 +6,8 @@ headers= libunzip.h
 
 output_target= ../assets/
 
+
+
 all: main.go
 	go build -buildmode=c-shared -o  $(linuxBuild) main.go
 	cp $(linuxBuild) ../lib/linux/$(linuxBuild)
@@ -14,11 +16,18 @@ all: main.go
 	gcc -shared -pthread -o libunzip.dll main.c main.a -lWinMM -lntdll -lWS2_32
 	cp $(winBuild)  ../windows/runner/$(winBuild)  
 
-clean:
-	rm  $(output_target)win/$(winBuild)  
-	rm  $(output_target)linux/$(linuxBuild)
-	rm  $(output_target)mac/$(macBuild)  
+linux: main.go
+	go build -buildmode=c-shared -o  $(linuxBuild) main.go
+	cp $(linuxBuild) ../lib/linux/$(linuxBuild)
 
+windows: main.go
+	go build -buildmode=c-archive main.go
+	gcc -shared -pthread -o libunzip.dll main.c main.a -lWinMM -lntdll -lWS2_32
+
+clean: 
+	rm main.a
+	rm main.h
+	rm main.so
 
 build: main.go
 	go build -buildmode=c-shared -o  $(linuxBuild) main.go

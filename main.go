@@ -16,6 +16,7 @@ import "C"
 import (
 	"archive/zip"
 	"fmt"
+	"image"
 	"io"
 	"os"
 	"path"
@@ -24,6 +25,10 @@ import (
 	"strconv"
 	"strings"
 	"unsafe"
+
+	_ "image/gif"
+	_ "image/jpeg"
+	_ "image/png"
 
 	"github.com/google/uuid"
 )
@@ -77,10 +82,10 @@ func Unzip(_files *C.char, _path *C.char, _output *C.char) *C.char {
 	// path := C.GoString(_path)
 
 	files = strings.Split(filesString, "&&")
-
 	for _, e := range files {
 		nameID := uuid.New().String()
 		archive, err := zip.OpenReader(e)
+
 		if err != nil {
 			break
 		}
@@ -91,7 +96,7 @@ func Unzip(_files *C.char, _path *C.char, _output *C.char) *C.char {
 				continue
 			}
 
-			dstPath := p.Join(output, nameID+"."+filepath.Ext(f.Name))
+			dstPath := p.Join(output, nameID+filepath.Ext(f.Name))
 			fmt.Println(dstPath)
 
 			cf, errC := os.Create(dstPath)
@@ -133,12 +138,40 @@ func isImageFile(filename string) bool {
 	}
 }
 
+func markFile(file *os.File, dest string) {
+	_, err := file.Seek(0, 0)
+	if err != nil {
+		return
+	}
+	image, _, err := image.DecodeConfig(file)
+	if err != nil {
+		return
+	}
+	isDouble := image.Width > image.Height
+
+	if isDouble {
+		_, f := path.Split(file.Name())
+		newPath := filepath.Join(dest, "_"+f)
+		fmt.Println(f)
+		fmt.Println(newPath)
+		err := os.Rename(file.Name(), newPath)
+		if err != nil {
+			fmt.Println("Err::")
+			fmt.Println(err)
+			return
+		}
+
+	}
+}
+
 //export Unzip_Single_book
 func Unzip_Single_book(_filePath *C.char, _dest *C.char) {
 
 	// Convert C string to Go string
 	zipPath := C.GoString(_filePath)
 	dest := C.GoString(_dest)
+	// zipPath := (_filePath)
+	// dest := (_dest)
 
 	removeAllContents(dest)
 
@@ -151,7 +184,6 @@ func Unzip_Single_book(_filePath *C.char, _dest *C.char) {
 	defer r.Close()
 
 	// Iterate over each file in the zip archive
-	fmt.Println("Number of files in a book: ", len(r.File))
 	for i, file := range r.File {
 
 		if file.FileInfo().IsDir() {
@@ -161,13 +193,17 @@ func Unzip_Single_book(_filePath *C.char, _dest *C.char) {
 		if !isImageFile(file.Name) {
 			continue
 		}
-		fileTargetPath := path.Join(dest, strconv.Itoa(i)+filepath.Ext(file.Name))
+
+		archivedFile, openErr := file.Open()
+
+		name := strconv.Itoa(i) + filepath.Ext(file.Name)
+
+		fileTargetPath := path.Join(dest, name)
 		createdFile, creationErr := os.Create(fileTargetPath)
 		if creationErr != nil {
 			fmt.Println(creationErr)
 			continue
 		}
-		archivedFile, openErr := file.Open()
 
 		if openErr != nil {
 			continue
@@ -181,6 +217,7 @@ func Unzip_Single_book(_filePath *C.char, _dest *C.char) {
 			fmt.Println("Failed to copy the file ", createdFile.Name())
 			continue
 		}
+		markFile(createdFile, dest)
 	}
 }
 
@@ -189,4 +226,5 @@ func FreeStrings(str *C.char, count C.int) {
 	C.free(unsafe.Pointer(str))
 }
 
-func main() {}
+func main() {
+}
