@@ -1,14 +1,4 @@
-package main
-
-/*
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-
-
-
-*/
-import "C"
+package sandbox
 
 import (
 	"archive/zip"
@@ -20,14 +10,10 @@ import (
 	"path/filepath"
 	p "path/filepath"
 	"strconv"
-	"strings"
-	"unsafe"
 
 	_ "image/gif"
 	_ "image/jpeg"
 	_ "image/png"
-
-	"github.com/google/uuid"
 )
 
 func ReadDir(path string) ([]string, error) {
@@ -62,60 +48,6 @@ func removeAllContents(dirPath string) error {
 		}
 	}
 	return nil
-}
-
-//export Unzip
-func Unzip(_files *C.char, _path *C.char, _output *C.char) *C.char {
-	results := []string{}
-	files := []string{}
-
-	output := C.GoString(_output)
-	filesString := C.GoString(_files)
-
-	files = strings.Split(filesString, "&&")
-	for _, e := range files {
-		nameID := uuid.New().String()
-		archive, err := zip.OpenReader(e)
-
-		if err != nil {
-			break
-		}
-		defer archive.Close()
-		for _, f := range archive.File {
-			//This is to ignore if its a dir
-			if f.FileInfo().IsDir() {
-				continue
-			}
-
-			dstPath := p.Join(output, nameID+filepath.Ext(f.Name))
-			fmt.Println(dstPath)
-
-			cf, errC := os.Create(dstPath)
-			if errC != nil {
-				fmt.Println(errC)
-				continue
-			}
-			archivedFile, err := f.Open()
-			if err != nil {
-				continue
-			}
-			io.Copy(cf, archivedFile)
-			if err != nil {
-				continue
-			}
-
-			splitPath := strings.Split(e, "/")
-			archiveName := splitPath[len(splitPath)-1]
-
-			//template
-			//cbz-name/cover-path/cbz-path
-			results = append(results, archiveName+";"+dstPath+";"+e)
-			cf.Close()
-			archivedFile.Close()
-			break
-		}
-	}
-	return C.CString(strings.Join(results, "&?&"))
 }
 
 // Function to check if a file has an image extension
@@ -156,22 +88,15 @@ func markFile(file *os.File, dest string) {
 }
 
 //export Unzip_Single_book
-func Unzip_Single_book(_filePath *C.char, _dest *C.char) C.int {
-
-	// Convert C string to Go string
-	zipPath := C.GoString(_filePath)
-	dest := C.GoString(_dest)
-	// zipPath := (_filePath)
-	// dest := (_dest)
+func unzipSingle(zipPath, dest string) {
 
 	removeAllContents(dest)
 
 	// Open the zip file
-
 	r, err := zip.OpenReader(zipPath)
 	if err != nil {
 		fmt.Println("Failed to open zip file:", err)
-		return 1
+
 	}
 	defer r.Close()
 
@@ -211,15 +136,9 @@ func Unzip_Single_book(_filePath *C.char, _dest *C.char) C.int {
 		}
 		markFile(createdFile, dest)
 	}
-	return 0
-}
-
-//export FreeStrings
-func FreeStrings(str *C.char, count C.int) {
-	C.free(unsafe.Pointer(str))
 }
 
 func main() {
-	// _unzipSingle("/home/petar/bigboy/Manga/OnePiece/", "/home/petar/Documents/mangakolekt/current")
+	unzipSingle("/home/petar/bigboy/Manga/OnePiece/", "/home/petar/Documents/mangakolekt/current")
 	// Unzip_Single_book()
 }
