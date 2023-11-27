@@ -84,7 +84,7 @@ typedef struct { void *data; GoInt len; GoInt cap; } GoSlice;
 extern "C" {
 #endif
 
-extern char* Unzip(char* _files, char* _path, char* _output);
+extern char* Unzip_Covers(char* _files, char* _path, char* _output);
 extern int Unzip_Single_book(char* _filePath, char* _dest);
 extern void FreeStrings(char* str, int count);
 
