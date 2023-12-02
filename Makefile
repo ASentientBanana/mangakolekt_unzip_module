@@ -19,6 +19,7 @@ all: main.go
 linux: main.go
 	go build -buildmode=c-shared -o  $(linuxBuild) main.go
 	cp $(linuxBuild) ../linux/$(linuxBuild)
+	cp $(linuxBuild) ../lib/linux/$(linuxBuild)
 
 
 windows: main.go
