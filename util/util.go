@@ -3,10 +3,12 @@ package util
 import (
 	"fmt"
 	"image"
+	"io"
 	"os"
 	"path"
 	"path/filepath"
 	"strconv"
+	"strings"
 )
 
 func IsImageFile(filename string) bool {
@@ -42,28 +44,35 @@ func RemoveAllContents(dirPath string) error {
 }
 
 func MarkFile(file *os.File, dest string) {
-	_, err := file.Seek(0, 0)
+
+	_, err := file.Seek(0, io.SeekStart)
+
 	if err != nil {
+		fmt.Println(err.Error())
 		return
 	}
+
 	image, _, err := image.DecodeConfig(file)
+
 	if err != nil {
+		fmt.Println(err.Error())
 		return
 	}
 	isDouble := image.Width > image.Height
 
-	if isDouble {
-		_, f := path.Split(file.Name())
-		newPath := filepath.Join(dest, "_"+f)
-		fmt.Println(f)
-		fmt.Println(newPath)
-		err := os.Rename(file.Name(), newPath)
-		if err != nil {
-			fmt.Println("Err::")
-			fmt.Println(err)
-			return
-		}
-
+	fmt.Println("is Double ", isDouble)
+	if !isDouble {
+		return
+	}
+	_, f := path.Split(file.Name())
+	newPath := file.Name()
+	newPath = strings.Replace(newPath, f, "_"+f, 1)
+	fmt.Println("Looking at: ", newPath, " from:  ", f, "to: ", "_"+f)
+	os.Rename(file.Name(), newPath)
+	if err != nil {
+		fmt.Println("Err::")
+		fmt.Println(err)
+		return
 	}
 }
 

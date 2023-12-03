@@ -7,7 +7,9 @@ import (
 )
 
 func TestUnzip(t *testing.T) {
-	unzip.Unzip_Single_Book("/home/petar/bigboy/Manga/OnePiece/Vol. 95.cbz",
+	unzip.Unzip_Single_Book(
+		// "/home/petar/bigboy/Manga/Vagabond/# 1.cbz",
+		"/home/petar/bigboy/Manga/OnePiece/Vol. 95.cbz",
 		"/home/petar/Documents/mangakolekt/current")
 }
 func TestUnzipCovers(t *testing.T) {
