@@ -6,6 +6,7 @@ import (
 	"io"
 	"os"
 	"path"
+	"strings"
 
 	_ "image/gif"
 	_ "image/jpeg"
@@ -14,16 +15,18 @@ import (
 	"github.com/asentientbanana/uz/util"
 )
 
-func Unzip_Single_Book(zipPath string, dest string) int {
+func Unzip_Single_Book(zipPath string, dest string) []string {
 
 	util.RemoveAllContents(dest)
+
+	var orderedContent []string
 
 	// Open the zip file
 	r, err := zip.OpenReader(zipPath)
 
 	if err != nil {
 		fmt.Println("Failed to open zip file:", err)
-		return 1
+		return []string{}
 	}
 	defer r.Close()
 
@@ -44,8 +47,12 @@ func Unzip_Single_Book(zipPath string, dest string) int {
 
 		defer archivedFile.Close()
 
-		// name := strconv.Itoa(i) + filepath.Ext(file.Name)
-		fileTargetPath := path.Join(dest, file.Name)
+		_, f := path.Split(file.Name)
+
+		// newPath = strings.Replace(newPath, f, "_"+f, 1)
+		nameSlices := strings.Split(file.FileInfo().Name(), "-")
+		name := strings.Replace(file.Name, f, nameSlices[0], 1)
+		fileTargetPath := path.Join(dest, name)
 
 		createdFile, creationErr := os.Create(fileTargetPath)
 
@@ -64,8 +71,13 @@ func Unzip_Single_Book(zipPath string, dest string) int {
 			fmt.Println("Failed to copy the file ", createdFile.Name())
 			continue
 		}
-		dir, _ := path.Split(createdFile.Name())
-		util.MarkFile(createdFile, dest+dir)
+
+		filePath, err := util.MarkFile(createdFile)
+		if err != nil {
+			return []string{}
+		}
+
+		orderedContent = append(orderedContent, filePath)
 	}
-	return 0
+	return orderedContent
 }

@@ -7,8 +7,8 @@ import (
 )
 
 func TestAnalyze(t *testing.T) {
-	// zipPath := "/home/petar/bigboy/Manga/OnePiece/Vol. 95.cbz"
-	zipPath := "/home/petar/bigboy/Manga/Vagabond/# 181.cbz"
+	zipPath := "/home/petar/bigboy/Manga/OnePiece/Vol. 95.cbz"
+	// zipPath := "/home/petar/bigboy/Manga/Vagabond/# 181.cbz"
 	r, err := zip.OpenReader(zipPath)
 	if err != nil {
 		fmt.Println(err)

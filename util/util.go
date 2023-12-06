@@ -43,37 +43,38 @@ func RemoveAllContents(dirPath string) error {
 	return nil
 }
 
-func MarkFile(file *os.File, dest string) {
+func MarkFile(file *os.File) (string, error) {
 
 	_, err := file.Seek(0, io.SeekStart)
 
 	if err != nil {
 		fmt.Println(err.Error())
-		return
+		return "", err
 	}
 
 	image, _, err := image.DecodeConfig(file)
 
 	if err != nil {
 		fmt.Println(err.Error())
-		return
+		return "", err
 	}
 	isDouble := image.Width > image.Height
 
-	fmt.Println("is Double ", isDouble)
 	if !isDouble {
-		return
+		return file.Name(), nil
 	}
 	_, f := path.Split(file.Name())
 	newPath := file.Name()
 	newPath = strings.Replace(newPath, f, "_"+f, 1)
-	fmt.Println("Looking at: ", newPath, " from:  ", f, "to: ", "_"+f)
 	os.Rename(file.Name(), newPath)
 	if err != nil {
 		fmt.Println("Err::")
 		fmt.Println(err)
-		return
+		return "", err
 	}
+
+	return newPath, nil
+
 }
 
 func ExtractNumericPart(s string) int {
