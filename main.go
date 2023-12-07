@@ -5,8 +5,6 @@ package main
 #include <stdlib.h>
 #include <string.h>
 
-
-
 */
 import "C"
 
@@ -45,7 +43,7 @@ func Unzip_Covers(_files *C.char, _path *C.char, _output *C.char) *C.char {
 }
 
 // Function to check if a file has an image extension
-
+//
 //export Unzip_Single_book
 func Unzip_Single_book(_filePath *C.char, _dest *C.char) *C.char {
 

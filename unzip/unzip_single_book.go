@@ -49,7 +49,6 @@ func Unzip_Single_Book(zipPath string, dest string) []string {
 
 		_, f := path.Split(file.Name)
 
-		// newPath = strings.Replace(newPath, f, "_"+f, 1)
 		nameSlices := strings.Split(file.FileInfo().Name(), "-")
 		name := strings.Replace(file.Name, f, nameSlices[0], 1)
 		fileTargetPath := path.Join(dest, name)
