@@ -6,7 +6,6 @@ import (
 	"io"
 	"os"
 	"path"
-	"strings"
 
 	_ "image/gif"
 	_ "image/jpeg"
@@ -47,11 +46,11 @@ func Unzip_Single_Book(zipPath string, dest string) []string {
 
 		defer archivedFile.Close()
 
-		_, f := path.Split(file.Name)
+		d, f := path.Split(file.Name)
 
-		nameSlices := strings.Split(file.FileInfo().Name(), "-")
-		name := strings.Replace(file.Name, f, nameSlices[0], 1)
-		fileTargetPath := path.Join(dest, name)
+		// nameSlices := strings.Split(file.FileInfo().Name(), "-")
+		// name := strings.Replace(file.Name, f, nameSlices[0], 1)
+		fileTargetPath := path.Join(dest, d, f)
 
 		createdFile, creationErr := os.Create(fileTargetPath)
 

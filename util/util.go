@@ -63,9 +63,10 @@ func MarkFile(file *os.File) (string, error) {
 	if !isDouble {
 		return file.Name(), nil
 	}
-	_, f := path.Split(file.Name())
+	// _, f := path.Split(file.Name())
 	newPath := file.Name()
-	newPath = strings.Replace(newPath, f, "_"+f, 1)
+	ext := path.Ext(newPath)
+	newPath = strings.Replace(newPath, ext, "__wide__"+ext, 1)
 	os.Rename(file.Name(), newPath)
 	if err != nil {
 		fmt.Println("Err::")
