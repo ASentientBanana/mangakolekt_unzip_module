@@ -1,27 +1,14 @@
 package tests
 
 import (
-	"archive/zip"
 	"fmt"
 	"testing"
+
+	"github.com/asentientbanana/uz/unrar"
 )
 
 func TestAnalyze(t *testing.T) {
-	zipPath := "/home/petar/bigboy/Manga/OnePiece/Vol. 95.cbz"
-	// zipPath := "/home/petar/bigboy/Manga/Vagabond/# 181.cbz"
-	r, err := zip.OpenReader(zipPath)
-	if err != nil {
-		fmt.Println(err)
-	}
-
-	for i, v := range r.File {
-		fmt.Println(i)
-		if v.FileInfo().IsDir() {
-			fmt.Println(v.FileInfo().Name())
-		} else {
-			fmt.Println("  |")
-			fmt.Println("  -->", v.FileInfo().Name())
-		}
-	}
-
+	filePath := "/home/petar/bigboy/Manga/SMUT/Puppy Lovers v01 c01-14.cbr"
+	res := unrar.Unrar_Single_Book(filePath, "/home/petar/Documents/mangakolekt/current")
+	fmt.Println("Res: ", res)
 }

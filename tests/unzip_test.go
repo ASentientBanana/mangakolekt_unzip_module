@@ -1,21 +1,27 @@
 package tests
 
 import (
+	"fmt"
+	"strings"
 	"testing"
 
 	"github.com/asentientbanana/uz/unzip"
 )
 
-func TestUnzip(t *testing.T) {
-	unzip.Unzip_Single_Book(
-		// "/home/petar/bigboy/Manga/Vagabond/# 1.cbz",
-		"/home/petar/bigboy/Manga/OnePiece/Vol. 95.cbz",
-		"/home/petar/Documents/mangakolekt/current")
-}
+// func TestUnzip(t *testing.T) {
+// unzip.Unzip_Single_Book(
+//
+//		// "/home/petar/bigboy/Manga/Vagabond/# 1.cbz",
+//		"/home/petar/bigboy/Manga/OnePiece/Vol. 95.cbz",
+//		"/home/petar/Documents/mangakolekt/current")
+//	}
 func TestUnzipCovers(t *testing.T) {
 
-	// unzip.Unzip_covers_from_dir(strings.Join(targetFiles, "&&"),
-	// 	"/home/petar/Videos/target")
+	res := unzip.Unzip_covers_from_dir(strings.Join(targetFiles, "&&"),
+		"/home/petar/Videos/target")
+	// "/home/petar/bigboy/Manga/OnePiece/")
+	fmt.Println("Res: ")
+	fmt.Println(res)
 }
 
 var targetFiles = []string{
