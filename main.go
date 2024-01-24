@@ -47,28 +47,11 @@ func Unzip_Covers(_files *C.char, _path *C.char, _output *C.char) *C.char {
 //export Unzip_Single_book
 func Unzip_Single_book(_filePath *C.char, _dest *C.char) *C.char {
 
-	// Convert C string to Go string
 	zipPath := C.GoString(_filePath)
 	dest := C.GoString(_dest)
-
 	content := unzip.Unzip_Single_Book(zipPath, dest)
-
-	// FOR NOW IM GOING WITH RETURNING A SINGLE STRING
-
-	// ret := C.malloc(C.size_t(len(content)) * C.size_t(unsafe.Sizeof(uintptr(0))))
-
-	// // convert to usable format so we are able to fill it with data
-	// pRet := (*[1<<30 - 1]*C.char)(ret)
-
-	// for i, item := range content {
-	// 	pRet[i] = C.CString(item)
-	// }
-	// pRet[len(content)] = nil
 	return C.CString(strings.Join(content, "?&?"))
 
 }
 
-func main() {
-	// _unzipSingle("/home/petar/bigboy/Manga/OnePiece/", "/home/petar/Documents/mangakolekt/current")
-	// Unzip_Single_book()
-}
+func main() {}

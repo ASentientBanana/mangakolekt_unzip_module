@@ -4,6 +4,7 @@ import (
 	"archive/zip"
 	"fmt"
 	"io"
+	"math"
 	"os"
 	"path/filepath"
 	p "path/filepath"
@@ -32,6 +33,28 @@ func FindCoverFromZip(files []*zip.File) (string, int) {
 	return fNames[0], position
 }
 
+func Split_files(files []string) [][]string {
+	split_files := [][]string{}
+	file_number := len(files)
+	items_per_section := 4
+	number_of_sections := math.Ceil(float64(file_number % items_per_section))
+	fmt.Println("Number of sections: ", number_of_sections)
+	if file_number <= items_per_section {
+		split_files = append(split_files, files)
+		return split_files
+	}
+	for i := 0; i < int(number_of_sections); i++ {
+		if i == int(number_of_sections)-1 {
+			split_files = append(split_files, files[i*4:file_number])
+			break
+		}
+		curr := i * 4
+		split_files = append(split_files, files[curr:curr+4])
+
+	}
+	return split_files
+}
+
 func Unzip_covers_from_dir(filesString string, output string) string {
 	results := []string{}
 	files := strings.Split(filesString, "&&")
@@ -47,9 +70,7 @@ func Unzip_covers_from_dir(filesString string, output string) string {
 		}
 		defer archive.Close()
 		res, pos := FindCoverFromZip(archive.File)
-		// _, dir := p.Split(res)
 
-		// dstPath := p.Join(output, dir)
 		dstPath := p.Join(output, nameID+filepath.Ext(res))
 
 		cf, errC := os.Create(dstPath)
@@ -70,49 +91,6 @@ func Unzip_covers_from_dir(filesString string, output string) string {
 		archiveName := splitPath[len(splitPath)-1]
 
 		results = append(results, archiveName+";"+dstPath+";"+dirFile)
-
-		//template
-		//cbz-name/cover-path/cbz-path
-
-		// for _, f := range archive.File {
-		// 	//This is to ignore if its a dir
-		// 	if f.FileInfo().IsDir() {
-		// 		continue
-		// 	}
-		// 	if !util.IsImageFile(f.Name) {
-		// 		continue
-		// 	}
-		// 	_, dir := p.Split(f.Name)
-		// 	fmt.Println(dir)
-
-		// 	// dstPath := p.Join(output, dir)
-		// 	dstPath := p.Join(output, nameID+filepath.Ext(f.Name))
-
-		// 	cf, errC := os.Create(dstPath)
-		// 	if errC != nil {
-		// 		fmt.Println(errC)
-		// 		continue
-		// 	}
-		// 	archivedFile, err := f.Open()
-		// 	defer archivedFile.Close()
-
-		// 	if err != nil {
-		// 		continue
-		// 	}
-		// 	io.Copy(cf, archivedFile)
-		// 	if err != nil {
-		// 		continue
-		// 	}
-
-		// 	splitPath := strings.Split(dirFile, "/")
-		// 	archiveName := splitPath[len(splitPath)-1]
-
-		// 	//template
-		// 	//cbz-name/cover-path/cbz-path
-		// 	results = append(results, archiveName+";"+dstPath+";"+dirFile)
-		// 	cf.Close()
-		// 	break
-		// }
 	}
 	return strings.Join(results, "&?&")
 }
