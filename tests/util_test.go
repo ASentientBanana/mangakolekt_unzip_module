@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/asentientbanana/uz/unzip"
+	"github.com/asentientbanana/uz/util"
 )
 
 var testCases = []string{
@@ -25,4 +26,12 @@ func TestFindCover(t *testing.T) {
 	e, i := unzip.FindCoverFromZip(archive.File)
 	fmt.Println("Found item: ", e)
 	fmt.Println("Found index: ", i)
+}
+
+func TestDirList(t *testing.T) {
+	files := util.GetFilesFromDir("/home/petar/Downloadss")
+	fmt.Println(files)
+	if len(files) == 0 {
+		t.Fail()
+	}
 }

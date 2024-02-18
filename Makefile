@@ -4,9 +4,9 @@ winBuild= manga_archive.dll
 
 
 linux: main.go
-	rm -rf build/linux
-	mkdir -p build/linux
-	go build -buildmode=c-shared -o  ./build/linux/$(linuxBuild) main.go
+	echo "Started $(arch)"
+	mkdir -p build/linux/$(arch)
+	GOARCH=$(arch) go build -buildmode=c-shared -o  ./build/linux/$(arch)/$(linuxBuild) ./main.go 
 
 windows: main.go
 	go build -buildmode=c-archive main.go

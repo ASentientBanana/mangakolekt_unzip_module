@@ -25,7 +25,6 @@ typedef struct { const char *p; ptrdiff_t n; } _GoString_;
 #include <stdlib.h>
 #include <string.h>
 
-
 #line 1 "cgo-generated-wrapper"
 
 
@@ -46,8 +45,8 @@ typedef int GoInt32;
 typedef unsigned int GoUint32;
 typedef long long GoInt64;
 typedef unsigned long long GoUint64;
-typedef GoInt64 GoInt;
-typedef GoUint64 GoUint;
+typedef GoInt32 GoInt;
+typedef GoUint32 GoUint;
 typedef size_t GoUintptr;
 typedef float GoFloat32;
 typedef double GoFloat64;
@@ -64,7 +63,7 @@ typedef double _Complex GoComplex128;
   static assertion to make sure the file is being used on architecture
   at least with matching size of GoInt.
 */
-typedef char _check_for_64_bit_pointer_matching_GoInt[sizeof(void*)==64/8 ? 1:-1];
+typedef char _check_for_32_bit_pointer_matching_GoInt[sizeof(void*)==32/8 ? 1:-1];
 
 #ifndef GO_CGO_GOSTRING_TYPEDEF
 typedef _GoString_ GoString;
@@ -87,6 +86,8 @@ extern char* Unzip_Covers(char* _files, char* _path, char* _output);
 // Function to check if a file has an image extension
 //
 extern char* Unzip_Single_book(char* _filePath, char* _dest);
+extern void Check_For_Lib_dir(char* _path);
+extern char* Get_Files_From_Dir(char* _path);
 
 #ifdef __cplusplus
 }

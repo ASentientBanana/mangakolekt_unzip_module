@@ -4,7 +4,6 @@ package main
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
 */
 import "C"
 
@@ -17,6 +16,7 @@ import (
 	_ "image/png"
 
 	"github.com/asentientbanana/uz/unzip"
+	"github.com/asentientbanana/uz/util"
 )
 
 func ReadDir(path string) ([]string, error) {
@@ -46,12 +46,23 @@ func Unzip_Covers(_files *C.char, _path *C.char, _output *C.char) *C.char {
 //
 //export Unzip_Single_book
 func Unzip_Single_book(_filePath *C.char, _dest *C.char) *C.char {
-
 	zipPath := C.GoString(_filePath)
 	dest := C.GoString(_dest)
 	content := unzip.Unzip_Single_Book(zipPath, dest)
 	return C.CString(strings.Join(content, "?&?"))
+}
 
+//export Check_For_Lib_dir
+func Check_For_Lib_dir(_path *C.char) {
+	path := C.GoString(_path)
+	util.CheckForLibDir(path)
+}
+
+//export Get_Files_From_Dir
+func Get_Files_From_Dir(_path *C.char) *C.char {
+	dirPath := C.GoString(_path)
+	filesString := util.GetFilesFromDir(dirPath)
+	return C.CString(filesString)
 }
 
 func main() {}

@@ -88,3 +88,28 @@ func ExtractNumericPart(s string) int {
 	num, _ := strconv.Atoi(numericPart)
 	return num
 }
+
+func CheckForLibDir(target string) {
+	if _, err := os.Stat(target); os.IsNotExist(err) {
+		// This is recursive
+		return
+	}
+	os.Remove(target)
+}
+
+func GetFilesFromDir(path string) string {
+	contents, er := os.ReadDir(path)
+	files := []string{}
+	fmt.Println("Looking for files")
+
+	if er != nil {
+		return ""
+	}
+	for _, v := range contents {
+		if !v.IsDir() {
+			files = append(files, filepath.Join(path, v.Name()))
+			fmt.Println("Found ", v.Name())
+		}
+	}
+	return strings.Join(files, "&&")
+}
