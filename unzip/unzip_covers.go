@@ -2,6 +2,7 @@ package unzip
 
 import (
 	"archive/zip"
+	"encoding/json"
 	"fmt"
 	"io"
 	"os"
@@ -9,18 +10,30 @@ import (
 	p "path/filepath"
 	"strings"
 
+	"github.com/asentientbanana/uz/models"
 	"github.com/asentientbanana/uz/util"
 	"github.com/google/uuid"
 )
 
-func Unzip_covers_from_dir(filesString string, output string) string {
+func Unzip_covers_from_dir(jsonString string, output string) string {
+
 	results := []string{}
-	files := []string{}
-	files = strings.Split(filesString, "&&")
+	files := []models.Cover{}
+	// json.Unmarshal()
+	// files = strings.Split(filesString, "&&")
+
+	//TODO: Steps
+	// read json string and extract file data
+
+	err := json.Unmarshal([]byte(jsonString), &files)
+	if err != nil {
+		errString := fmt.Sprintf("{ error:  %s}", err)
+		return errString
+	}
 
 	for _, dirFile := range files {
 		nameID := uuid.New().String()
-		archive, err := zip.OpenReader(dirFile)
+		archive, err := zip.OpenReader(dirFile.DirectoryFile)
 
 		if err != nil {
 
@@ -62,7 +75,7 @@ func Unzip_covers_from_dir(filesString string, output string) string {
 				continue
 			}
 
-			splitPath := strings.Split(dirFile, "/")
+			splitPath := strings.Split(dirFile.DirectoryFile, "/")
 			archiveName := splitPath[len(splitPath)-1]
 
 			//template
