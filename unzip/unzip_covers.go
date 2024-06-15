@@ -17,23 +17,22 @@ import (
 
 func Unzip_covers_from_dir(jsonString string, output string) string {
 
-	results := []string{}
-	files := []models.Cover{}
-	// json.Unmarshal()
-	// files = strings.Split(filesString, "&&")
-
-	//TODO: Steps
-	// read json string and extract file data
-
+	results := []models.Cover{}
+	files := []string{}
+	fmt.Println("STARTING")
 	err := json.Unmarshal([]byte(jsonString), &files)
 	if err != nil {
-		errString := fmt.Sprintf("{ error:  %s}", err)
-		return errString
+		//errString := fmt.Sprintf("{ error:  %s}", err)
+		return "[]"
 	}
+	fmt.Printf("UNMARSHALED: %s\n", jsonString)
 
+	fmt.Println("Got:")
+	fmt.Println(files)
 	for _, dirFile := range files {
 		nameID := uuid.New().String()
-		archive, err := zip.OpenReader(dirFile.DirectoryFile)
+		fmt.Printf("Opening zip file:: %s\n", dirFile)
+		archive, err := zip.OpenReader(dirFile)
 
 		if err != nil {
 
@@ -41,7 +40,6 @@ func Unzip_covers_from_dir(jsonString string, output string) string {
 			fmt.Println("Error", dirFile)
 			continue
 		}
-		defer archive.Close()
 
 		for _, f := range archive.File {
 			//This is to ignore if its a dir
@@ -65,25 +63,36 @@ func Unzip_covers_from_dir(jsonString string, output string) string {
 				continue
 			}
 			archivedFile, err := f.Open()
-			defer archivedFile.Close()
 
 			if err != nil {
 				continue
 			}
-			io.Copy(cf, archivedFile)
-			if err != nil {
+			_, copyErr := io.Copy(cf, archivedFile)
+			if copyErr != nil {
 				continue
 			}
 
-			splitPath := strings.Split(dirFile.DirectoryFile, "/")
+			splitPath := strings.Split(dirFile, "/")
 			archiveName := splitPath[len(splitPath)-1]
 
 			//template
 			//cbz-name/cover-path/cbz-path
-			results = append(results, archiveName+";"+dstPath+";"+dirFile)
+			results = append(results, models.Cover{
+				ArchiveName:     archiveName,
+				DestinationPath: dstPath,
+				DirectoryFile:   dirFile,
+			})
+
+			archivedFile.Close()
 			cf.Close()
 			break
 		}
+
+		archive.Close()
 	}
-	return strings.Join(results, "&?&")
+	jsonResponse, err := json.Marshal(results)
+	if err != nil {
+		return `[]`
+	}
+	return string(jsonResponse)
 }
