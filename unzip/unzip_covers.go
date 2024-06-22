@@ -19,30 +19,22 @@ func Unzip_covers_from_dir(jsonString string, output string) string {
 
 	results := []models.Cover{}
 	files := []string{}
-	fmt.Println("STARTING")
 	err := json.Unmarshal([]byte(jsonString), &files)
 	if err != nil {
 		//errString := fmt.Sprintf("{ error:  %s}", err)
 		return "[]"
 	}
-	fmt.Printf("UNMARSHALED: %s\n", jsonString)
 
-	fmt.Println("Got:")
-	fmt.Println(files)
 	for _, dirFile := range files {
 		nameID := uuid.New().String()
-		fmt.Printf("Opening zip file:: %s\n", dirFile)
 		archive, err := zip.OpenReader(dirFile)
 
 		if err != nil {
-
-			fmt.Println("Failed to open zip file:", err)
-			fmt.Println("Error", dirFile)
 			continue
 		}
 
 		for _, f := range archive.File {
-			//This is to ignore if its a dir
+			//This is to ignore if it's a dir
 			if f.FileInfo().IsDir() {
 				continue
 			}

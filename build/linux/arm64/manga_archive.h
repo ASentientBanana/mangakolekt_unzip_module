@@ -83,10 +83,9 @@ extern "C" {
 #endif
 
 extern char* Unzip_Covers(char* _files, char* _path, char* _output);
-
-// Function to check if a file has an image extension
-//
-extern char* Unzip_Single_book(char* _filePath, char* _dest);
+extern char* Unrar_Covers(char* _files, char* _path, char* _output);
+extern void Unzip_Single_book(char* _filePath, char* _dest);
+extern void Unrar_Single_book(char* _filePath, char* _dest);
 
 #ifdef __cplusplus
 }
