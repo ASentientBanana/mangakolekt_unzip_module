@@ -9,6 +9,7 @@ package main
 import "C"
 
 import (
+	"github.com/asentientbanana/uz/unrar"
 	_ "image/gif"
 	_ "image/jpeg"
 	_ "image/png"
@@ -40,12 +41,31 @@ func Unzip_Covers(_files *C.char, _path *C.char, _output *C.char) *C.char {
 	return C.CString(results)
 }
 
+//export Unrar_Covers
+func Unrar_Covers(_files *C.char, _path *C.char, _output *C.char) *C.char {
+
+	output := C.GoString(_output)
+	filesString := C.GoString(_files)
+
+	results := unrar.Unrar_covers_from_dir(filesString, output)
+
+	return C.CString(results)
+}
+
 //export Unzip_Single_book
 func Unzip_Single_book(_filePath *C.char, _dest *C.char) {
 
 	zipPath := C.GoString(_filePath)
 	dest := C.GoString(_dest)
 	unzip.Unzip_Single_Book(zipPath, dest)
+}
+
+//export Unrar_Single_book
+func Unrar_Single_book(_filePath *C.char, _dest *C.char) {
+
+	zipPath := C.GoString(_filePath)
+	dest := C.GoString(_dest)
+	unrar.Unrar_Single_Book(zipPath, dest)
 }
 
 func main() {

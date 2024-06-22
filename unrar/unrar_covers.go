@@ -12,7 +12,7 @@ import (
 	"strings"
 )
 
-func Urar_covers_from_dir(jsonString string, output string) string {
+func Unrar_covers_from_dir(jsonString string, output string) string {
 
 	var results []models.Cover
 	var files []string
