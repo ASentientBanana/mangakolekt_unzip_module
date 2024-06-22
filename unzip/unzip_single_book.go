@@ -2,7 +2,6 @@ package unzip
 
 import (
 	"archive/zip"
-	"encoding/json"
 	"fmt"
 	"io"
 	"os"
@@ -15,18 +14,18 @@ import (
 	"github.com/asentientbanana/uz/util"
 )
 
-func Unzip_Single_Book(zipPath string, dest string) string {
+func Unzip_Single_Book(zipPath string, dest string) {
 
 	util.RemoveAllContents(dest)
 
-	var orderedContent []string
+	//var orderedContent []string
 
 	// Open the zip file
 	r, err := zip.OpenReader(zipPath)
 
 	if err != nil {
 		fmt.Println("Failed to open zip file:", err)
-		return "[]"
+		return
 	}
 	defer r.Close()
 
@@ -71,16 +70,9 @@ func Unzip_Single_Book(zipPath string, dest string) string {
 			continue
 		}
 
-		filePath, err := util.MarkFile(createdFile)
-		if err != nil {
-			return "[]"
-		}
-
-		orderedContent = append(orderedContent, filePath)
+		//filePath, err := util.MarkFile(createdFile)
+		//if err != nil {
+		//	return
+		//}
 	}
-	jsonResponse, err := json.Marshal(orderedContent)
-	if err != nil {
-		return `[]`
-	}
-	return string(jsonResponse)
 }

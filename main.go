@@ -41,15 +41,11 @@ func Unzip_Covers(_files *C.char, _path *C.char, _output *C.char) *C.char {
 }
 
 //export Unzip_Single_book
-func Unzip_Single_book(_filePath *C.char, _dest *C.char) *C.char {
+func Unzip_Single_book(_filePath *C.char, _dest *C.char) {
 
 	zipPath := C.GoString(_filePath)
 	dest := C.GoString(_dest)
-
-	content := unzip.Unzip_Single_Book(zipPath, dest)
-
-	return C.CString(content)
-
+	unzip.Unzip_Single_Book(zipPath, dest)
 }
 
 func main() {

@@ -1,2 +1,4 @@
+github.com/gen2brain/go-unarr v0.2.3 h1:VwZg0P6Dc/8Uh51McjVhzUMg4wHwwbiyqjEFsFELc0c=
+github.com/gen2brain/go-unarr v0.2.3/go.mod h1:hoHheVuf0KT8/hfvkEL7GMwj2h7fq0lF72NdyySdr3c=
 github.com/google/uuid v1.3.0 h1:t6JiXgmwXMjEs8VusXIJk2BXHsn+wx8BZdTaoZ5fu7I=
 github.com/google/uuid v1.3.0/go.mod h1:TIyPZe4MgqvfeYDBFedMoGGpEw/LqOeaOT+nhxU+yHo=
